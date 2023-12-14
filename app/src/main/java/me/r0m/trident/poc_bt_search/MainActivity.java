@@ -57,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
                 bluetoothAdapter.cancelDiscovery();
             } else {
                 Log.d("BT", "Start discovering devices");
+                TextView textView = findViewById(R.id.btStateTextView);
+                textView.setText("State: Startes discovering devices!");
                 bluetoothAdapter.startDiscovery();
             }
         }
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             TextView textView = findViewById(R.id.btDetectedDeviceList);
-            textView.append(deviceName + " " + deviceHardwareAddress + "\n");
+            textView.append(deviceName + "\t\t" + deviceHardwareAddress + "\n");
         }
     };
 
