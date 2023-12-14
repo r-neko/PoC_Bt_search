@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -83,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
             else {
                 Log.d("BT", "Found device: " + deviceHardwareAddress);
             }
+
+            TextView textView = findViewById(R.id.btDetectedDeviceList);
+            textView.append(deviceName + " " + deviceHardwareAddress + "\n");
         }
     };
 
