@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Log.d("BT", "Start discovering devices");
                 TextView textView = findViewById(R.id.btStateTextView);
-                textView.setText("State: Startes discovering devices!");
+                textView.setText("State: Started discovering devices!");
                 bluetoothAdapter.startDiscovery();
             }
         }
