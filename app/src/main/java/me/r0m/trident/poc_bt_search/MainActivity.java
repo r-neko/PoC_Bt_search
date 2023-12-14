@@ -1,5 +1,6 @@
 package me.r0m.trident.poc_bt_search;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,11 +35,37 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(receiver, filter);
 
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter == null) {
+            Log.d("BT", "Device does not support Bluetooth");
+            return;
+        } else {
+            Log.d("BT", "Device supports Bluetooth");
+
+            // Start discovering devices
+
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                Log.d("BT", "No permission to scan bluetooth devices");
+                return;
+            }
+            else {
+                Log.d("BT", "Permission to scan bluetooth devices granted");
+            }
+            if (bluetoothAdapter.isDiscovering()) {
+                Log.d("BT", "Already discovering devices");
+                bluetoothAdapter.cancelDiscovery();
+            } else {
+                Log.d("BT", "Start discovering devices");
+                bluetoothAdapter.startDiscovery();
+            }
+        }
+
     }
 
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
+            Log.d("BT", "Received broadcast");
             String action = intent.getAction();
 
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
@@ -49,6 +76,13 @@ public class MainActivity extends AppCompatActivity {
             }
             String deviceName = device.getName();
             String deviceHardwareAddress = device.getAddress(); // MAC address
+
+            if (deviceName != null) {
+                Log.d("BT", "Found device: " + deviceName + " " + deviceHardwareAddress);
+            }
+            else {
+                Log.d("BT", "Found device: " + deviceHardwareAddress);
+            }
         }
     };
 
