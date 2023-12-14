@@ -2,7 +2,9 @@ package me.r0m.trident.poc_bt_search;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -35,27 +37,34 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        // Init Broadcast Receiver
+        // Register for broadcasts when a device is discovered.
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(receiver, filter);
 
-        BtBroadcastReceiver btBroadcastReceiver = new BtBroadcastReceiver();
-
-
-        // Intent Filter
-
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(btBroadcastReceiver, intentFilter);
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-            Log.d("BT", "No permission to scan for bluetooth devices");
-            return;
-        }
-
-
-        if (BluetoothAdapter.getDefaultAdapter().isDiscovering()) {
-            // Discovery is already in progress
-        } else {
-            Log.d("BT", "Bluetooth is not discovering. May not be enabled.");
-        }
     }
+
+    // Create a BroadcastReceiver for ACTION_FOUND.
+    private final BroadcastReceiver receiver = new BtBroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+            if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+
+                Log.d("BT", "No permission to connect to bluetooth device");
+                return;
+            }
+            String deviceName = device.getName();
+            String deviceHardwareAddress = device.getAddress(); // MAC address
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver); //レシーバー破棄
+
+    }
+
 }
+
